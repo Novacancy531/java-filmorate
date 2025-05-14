@@ -17,10 +17,11 @@ import java.util.Map;
 @Validated
 @RequestMapping("/users")
 public class UserController {
-    Map<Long, User> users = new HashMap<>();
+    private final Map<Long, User> users = new HashMap<>();
+    private int currentId = 0;
 
     @PostMapping
-    public User post(@Valid @RequestBody User user) {
+    public User createUser(@Valid @RequestBody User user) {
         log.info("Добавление пользователя.");
         if (user.getName() == null || user.getName().isBlank()) {
             log.trace("В поле имя установлен логин, т.к. поле имя пустое.");
@@ -33,13 +34,13 @@ public class UserController {
     }
 
     @GetMapping
-    public Collection<User> get() {
+    public Collection<User> getAllUsers() {
         log.info("Отправка коллекции пользователей.");
         return users.values();
     }
 
     @PutMapping
-    public ResponseEntity<User> put(@Valid @RequestBody User user) {
+    public ResponseEntity<User> updateUser(@Valid @RequestBody User user) {
         log.info("Обновление данных пользователя.");
 
         if (user.getId() == null) {
@@ -54,11 +55,6 @@ public class UserController {
     }
 
     private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++currentId;
     }
 }

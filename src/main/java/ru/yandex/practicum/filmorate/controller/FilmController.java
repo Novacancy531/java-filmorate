@@ -17,10 +17,11 @@ import java.util.Map;
 @Validated
 @RequestMapping("/films")
 public class FilmController {
-    Map<Long, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
+    private int currentId = 0;
 
     @PostMapping
-    public Film post(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Добавление фильма.");
         film.setId(getNextId());
         films.put(film.getId(), film);
@@ -29,13 +30,13 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> get() {
+    public Collection<Film> getAllFilms() {
         log.info("Отправка коллекции фильмов.");
         return films.values();
     }
 
     @PutMapping
-    public ResponseEntity<Film> put(@Valid @RequestBody Film film) {
+    public ResponseEntity<Film> updateFilm(@Valid @RequestBody Film film) {
         log.info("Обновление данных фильма.");
 
         if (film.getId() == null) {
@@ -50,11 +51,6 @@ public class FilmController {
     }
 
     private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++currentId;
     }
 }
